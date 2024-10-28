@@ -16,11 +16,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SkinCommand implements CommandExecutor {
     private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
+    private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -44,6 +47,9 @@ public class SkinCommand implements CommandExecutor {
     }
 
     private Collection<ProfileProperty> getTextureProperty(String targetSkin) {
+        if (cache.containsKey(targetSkin))
+            return cache.get(targetSkin);
+
         final String profileResponse = makeRequest(PROFILE_URL + targetSkin);
         final JsonObject profileObject = JsonParser.parseString(profileResponse).getAsJsonObject();
         final String uuid = profileObject.get("id").getAsString();
@@ -52,8 +58,11 @@ public class SkinCommand implements CommandExecutor {
         final JsonObject skinObject = JsonParser.parseString(skinResponse).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
         final String value = skinObject.get("value").getAsString();
         final String signature = skinObject.get("signature").getAsString();
+        final ProfileProperty profileProperty = new ProfileProperty("textures", value, signature);
 
-        return List.of(new ProfileProperty("textures", value, signature));
+        cache.put(targetSkin, List.of(profileProperty));
+
+        return List.of(profileProperty);
     }
 
     private String makeRequest(String url) {
