@@ -1,7 +1,11 @@
 name: skin-changer
-version: '1.0-SNAPSHOT'
+version: '1.0-SNAPSHOT-LUVOOS'
 main: io.smcode.skinChanger.SkinChangerPlugin
 api-version: '1.21'
+authors:
+  - smcode
+  - Luvoos
+description: skin-changer (edited by Luvoos)
 
 commands:
   skin:
