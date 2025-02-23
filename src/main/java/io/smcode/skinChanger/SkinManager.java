@@ -23,7 +23,7 @@ public class SkinManager {
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
     private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
-    public void setSkin(Player player, String skinName, boolean sendConfirmationMessage) {
+    public void setSkinFromName(Player player, String skinName, boolean sendConfirmationMessage) {
         final String targetSkin = skinName;
         final PlayerProfile playerProfile = player.getPlayerProfile();
         playerProfile.setProperties(getTextureProperty(targetSkin));
@@ -52,7 +52,6 @@ public class SkinManager {
     }
 
     private String makeRequest(String url) {
-
         try (final HttpClient client = HttpClient.newBuilder().build()) {
             final HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
             final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

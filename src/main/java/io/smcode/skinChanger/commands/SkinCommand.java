@@ -23,7 +23,7 @@ public class SkinCommand implements CommandExecutor {
             return true;
         }
 
-        plugin.skinManager.setSkin(player, args[0], true);
+        plugin.skinManager.setSkinFromName(player, args[0], true);
 
         return true;
     }
