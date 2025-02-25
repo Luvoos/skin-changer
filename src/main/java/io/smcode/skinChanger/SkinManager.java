@@ -24,12 +24,12 @@ public class SkinManager {
     private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
     public void setSkinFromName(Player player, String skinName, boolean sendConfirmationMessage) {
-        final String targetSkin = skinName;
+        assert skinName != null && !skinName.isEmpty() && player != null;
         final PlayerProfile playerProfile = player.getPlayerProfile();
-        playerProfile.setProperties(getTextureProperty(targetSkin));
+        playerProfile.setProperties(getTextureProperty(skinName));
         player.setPlayerProfile(playerProfile);
 
-        if (sendConfirmationMessage) player.sendMessage("§aYour skin has been changed to: " + targetSkin);
+        if (sendConfirmationMessage) player.sendMessage("§aYour skin has been changed to: " + skinName);
     }
 
     private Collection<ProfileProperty> getTextureProperty(String targetSkin) {
