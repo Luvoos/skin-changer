@@ -19,7 +19,7 @@ public class SkinCommand implements CommandExecutor {
         }
 
         if (args.length != 1) {
-            player.sendMessage("Usage: /skin <player>");
+            player.sendMessage("Usage: /skin <username>");
             return true;
         }
 

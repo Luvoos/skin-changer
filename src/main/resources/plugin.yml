@@ -9,3 +9,5 @@ description: skin-changer (edited by Luvoos)
 
 commands:
   skin:
+    description: Change your skin
+    usage: /skin <username>

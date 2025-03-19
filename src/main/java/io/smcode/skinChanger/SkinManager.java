@@ -23,16 +23,16 @@ public class SkinManager {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
-    public void setSkinFromName(@NotNull Player player, @NotNull String skinName, boolean sendConfirmationMessage) {
+    public void setSkinFromName(@NotNull Player player, @NotNull String skinName, boolean sendResponseMessage) {
         if (skinName.isEmpty() || !player.isOnline()) return;
         try {
             final PlayerProfile playerProfile = player.getPlayerProfile();
             playerProfile.setProperties(getTextureProperty(skinName));
             player.setPlayerProfile(playerProfile);
 
-            if (sendConfirmationMessage) player.sendMessage("§aYour skin has been changed to: " + skinName);
+            if (sendResponseMessage) player.sendMessage("§aYour skin has been changed to: " + skinName);
         } catch (NullPointerException e) {
-            player.sendMessage("§cInvalid profile! ('" + skinName + "')");
+            if (sendResponseMessage) player.sendMessage("§cInvalid profile! ('" + skinName + "')");
         }
     }
 

@@ -14,6 +14,8 @@ public final class SkinChangerPlugin extends JavaPlugin {
             init();
         } catch (Exception e) {
             getLogger().warning("Something went wrong: " + e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         getLogger().info("SkinChanger was enabled!");
     }
