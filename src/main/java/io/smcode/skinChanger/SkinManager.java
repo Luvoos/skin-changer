@@ -11,10 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SkinManager {
 
@@ -25,30 +22,38 @@ public class SkinManager {
 
     public void setSkinFromName(Player player, String skinName, boolean sendConfirmationMessage) {
         if (skinName == null || skinName.isEmpty() || player == null) return;
-        final PlayerProfile playerProfile = player.getPlayerProfile();
-        playerProfile.setProperties(getTextureProperty(skinName));
-        player.setPlayerProfile(playerProfile);
+        try {
+            final PlayerProfile playerProfile = player.getPlayerProfile();
+            playerProfile.setProperties(getTextureProperty(skinName));
+            player.setPlayerProfile(playerProfile);
 
-        if (sendConfirmationMessage) player.sendMessage("§aYour skin has been changed to: " + skinName);
+            if (sendConfirmationMessage) player.sendMessage("§aYour skin has been changed to: " + skinName);
+        } catch (NullPointerException e) {
+            player.sendMessage("§cInvalid profile! ('" + skinName + "')");
+        }
     }
 
     private Collection<ProfileProperty> getTextureProperty(String targetSkin) {
-        if (cache.containsKey(targetSkin))
-            return cache.get(targetSkin);
+        if (cache.containsKey(targetSkin)) return cache.get(targetSkin);
 
-        final String profileResponse = makeRequest(PROFILE_URL + targetSkin);
-        final JsonObject profileObject = JsonParser.parseString(profileResponse).getAsJsonObject();
-        final String uuid = profileObject.get("id").getAsString();
+        try {
+            final String profileResponse = makeRequest(PROFILE_URL + targetSkin);
+            final JsonObject profileObject = JsonParser.parseString(profileResponse).getAsJsonObject();
+            final String uuid = profileObject.get("id").getAsString();
 
-        final String skinResponse = makeRequest(SKIN_URL.formatted(uuid));
-        final JsonObject skinObject = JsonParser.parseString(skinResponse).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
-        final String value = skinObject.get("value").getAsString();
-        final String signature = skinObject.get("signature").getAsString();
-        final ProfileProperty profileProperty = new ProfileProperty("textures", value, signature);
+            final String skinResponse = makeRequest(SKIN_URL.formatted(uuid));
+            final JsonObject skinObject = JsonParser.parseString(skinResponse).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+            final String value = skinObject.get("value").getAsString();
+            final String signature = skinObject.get("signature").getAsString();
+            final ProfileProperty profileProperty = new ProfileProperty("textures", value, signature);
 
-        cache.put(targetSkin, List.of(profileProperty));
+            cache.put(targetSkin, List.of(profileProperty));
 
-        return List.of(profileProperty);
+            return List.of(profileProperty);
+        } catch (NullPointerException e) {
+            plugin.getLogger().warning("NullPointerException. This is likely caused by invalid profile input.");
+            return null;
+        }
     }
 
     private String makeRequest(String url) {
