@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SkinCommand implements CommandExecutor {
 
-    private final SkinChangerPlugin plugin = SkinChangerPlugin.getPlugin(SkinChangerPlugin.class);
+    private final SkinChangerPlugin plugin = SkinChangerPlugin.instance;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

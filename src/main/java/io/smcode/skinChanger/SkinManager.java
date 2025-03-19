@@ -18,13 +18,13 @@ import java.util.Map;
 
 public class SkinManager {
 
-    private final SkinChangerPlugin plugin = SkinChangerPlugin.getPlugin(SkinChangerPlugin.class);
+    private final SkinChangerPlugin plugin = SkinChangerPlugin.instance;
     private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
     private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
     public void setSkinFromName(Player player, String skinName, boolean sendConfirmationMessage) {
-        assert skinName != null && !skinName.isEmpty() && player != null;
+        if (skinName == null || skinName.isEmpty() || player == null) return;
         final PlayerProfile playerProfile = player.getPlayerProfile();
         playerProfile.setProperties(getTextureProperty(skinName));
         player.setPlayerProfile(playerProfile);
