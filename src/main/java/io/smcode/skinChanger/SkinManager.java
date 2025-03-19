@@ -5,7 +5,9 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,10 +20,11 @@ public class SkinManager {
     private final SkinChangerPlugin plugin = SkinChangerPlugin.instance;
     private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
     private static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Map<String, Collection<ProfileProperty>> cache = new HashMap<>();
 
-    public void setSkinFromName(Player player, String skinName, boolean sendConfirmationMessage) {
-        if (skinName == null || skinName.isEmpty() || player == null) return;
+    public void setSkinFromName(@NotNull Player player, @NotNull String skinName, boolean sendConfirmationMessage) {
+        if (skinName.isEmpty() || !player.isOnline()) return;
         try {
             final PlayerProfile playerProfile = player.getPlayerProfile();
             playerProfile.setProperties(getTextureProperty(skinName));
@@ -57,9 +60,9 @@ public class SkinManager {
     }
 
     private String makeRequest(String url) {
-        try (final HttpClient client = HttpClient.newBuilder().build()) {
+        try {
             final HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
-            final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            final HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             return response.body();
         } catch (IOException | InterruptedException e) {
             plugin.getLogger().warning("REQUEST ERROR! URL: " + url);
